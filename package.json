@@ -1,0 +1,52 @@
+{
+  "name": "gsap-offset-path",
+  "version": "1.0.2",
+  "description": "GSAP plugin for animating SVG path offsets using Clipper2 WASM",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "wasm/pkg/clipper_offset.js",
+    "wasm/pkg/clipper_offset_bg.wasm"
+  ],
+  "scripts": {
+    "wasm:build": "cd wasm/clipper-offset && wasm-pack build --target web --out-dir pkg",
+    "wasm:build:release": "cd wasm/clipper-offset && wasm-pack build --target web --release --out-dir pkg",
+    "wasm:copy": "mkdir -p wasm/pkg && cp wasm/clipper-offset/pkg/clipper_offset_bg.wasm wasm/clipper-offset/pkg/clipper_offset.js wasm/pkg/",
+    "build:wasm": "pnpm wasm:build:release && pnpm wasm:copy",
+    "build": "tsup",
+    "prepublishOnly": "pnpm build:wasm && pnpm build"
+  },
+  "keywords": [
+    "gsap",
+    "svg",
+    "path",
+    "offset",
+    "clipper2",
+    "wasm",
+    "animation"
+  ],
+  "author": "Faith Branch Software LLC",
+  "license": "MIT",
+  "peerDependencies": {
+    "gsap": "^3.12.0"
+  },
+  "devDependencies": {
+    "gsap": "^3.12.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
