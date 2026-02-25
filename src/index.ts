@@ -1,3 +1,3 @@
-export { OffsetPathPlugin, initOffsetPath, isReady } from './OffsetPathPlugin';
+export { OffsetPathPlugin } from './OffsetPathPlugin';
 export { JoinType, EndType } from './types';
-export type { OffsetPathOptions, InitOptions } from './types';
+export type { OffsetPathOptions } from './types';

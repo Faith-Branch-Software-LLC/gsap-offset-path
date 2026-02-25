@@ -8,4 +8,6 @@ export default defineConfig({
   clean: true,
   outDir: 'dist',
   external: ['gsap'],
+  minify: true,
+  splitting: false,
 });

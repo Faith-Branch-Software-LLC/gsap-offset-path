@@ -33,31 +33,6 @@ export interface OffsetPathOptions {
   originY?: number;
 }
 
-/** Configuration for WASM initialization */
-export interface InitOptions {
-  /** URL or path to the .wasm binary (e.g. "/wasm/clipper_offset_bg.wasm") */
-  wasmUrl: string;
-  /** URL or path to the WASM glue JS (e.g. "/wasm/clipper_offset.js") */
-  glueUrl: string;
-}
-
-/** WASM module interface (matches wasm-pack output) */
-export interface ClipperOffsetWasm {
-  default: (urlOrBuffer: string | BufferSource) => Promise<void>;
-  offset_svg_path: (
-    pathData: string,
-    offsetAmount: number,
-    joinType: number,
-    endType: number,
-    miterLimit: number,
-    arcTolerance: number,
-    originX: number | undefined | null,
-    originY: number | undefined | null,
-  ) => string;
-  offset_svg_path_simple: (pathData: string, offsetAmount: number) => string;
-  validate_svg_path: (pathData: string) => boolean;
-}
-
 // Extend GSAP's TweenVars interface
 declare module 'gsap' {
   interface TweenVars {
