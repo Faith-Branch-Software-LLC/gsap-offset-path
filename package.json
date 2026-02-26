@@ -1,7 +1,7 @@
 {
   "name": "gsap-offset-path",
-  "version": "1.0.3",
-  "description": "GSAP plugin for animating SVG path offsets — zero dependencies, pure TypeScript",
+  "version": "1.0.4",
+  "description": "GSAP plugin for animating SVG path offsets",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

@@ -23,8 +23,8 @@ function norm(a: Pt): Pt {
   const l = len(a);
   return l > 1e-10 ? [a[0] / l, a[1] / l] : [0, 0];
 }
-// Outward-left normal (for CCW polygon, this points outward)
-function leftNormal(e: Pt): Pt { return [-e[1], e[0]]; }
+// Outward normal for SVG coordinates (Y-down, CW winding convention)
+function perpNormal(e: Pt): Pt { return [e[1], -e[0]]; }
 
 // ---------------------------------------------------------------------------
 // SVG path parser (port of parse_svg_to_lyon from lib.rs)
@@ -242,7 +242,9 @@ function svgToPoints(pathData: string, sc: number, tol: number): Pt[] | null {
   // Scale to integers
   const pts: Pt[] = floatPts.map(([x, y]) => [Math.round(x * sc), Math.round(y * sc)]);
 
-  // Winding check via shoelace (CCW required)
+  // Winding check via shoelace — ensure CW in screen coords (standard SVG convention).
+  // In Y-down SVG coordinates, CW paths have negative shoelace sum; CCW have positive.
+  // Reverse CCW paths (area > 0) to CW so the perpNormal points outward.
   let area = 0;
   for (let i = 0; i < pts.length; i++) {
     const j = (i + 1) % pts.length;
@@ -338,8 +340,8 @@ function offsetPolygon(
     const e2 = norm(sub(next, curr));
 
     // Outward normals for each edge (left normal for CCW)
-    const outN1: Pt = leftNormal(e1);
-    const outN2: Pt = leftNormal(e2);
+    const outN1: Pt = perpNormal(e1);
+    const outN2: Pt = perpNormal(e2);
 
     // Cross product of edge vectors: positive = left turn (convex corner for CCW)
     const cr = cross(e1, e2);
@@ -354,7 +356,7 @@ function offsetPolygon(
     if (!isConvex || Math.abs(cr) < 1e-6) {
       // Concave corner or nearly parallel: bisector point
       const bisect = norm(add(outN1, outN2));
-      const sinHalf = cross(e1, bisect);
+      const sinHalf = -cross(e1, bisect);
       if (Math.abs(sinHalf) < 1e-6) {
         // Parallel edges: simple offset along normal
         result.push([Math.round(curr[0] + outN1[0] * offsetAmt), Math.round(curr[1] + outN1[1] * offsetAmt)]);
@@ -367,7 +369,7 @@ function offsetPolygon(
       switch (joinType) {
         case JoinType.Miter: {
           const bisect = norm(add(outN1, outN2));
-          const sinHalf = cross(e1, bisect);
+          const sinHalf = -cross(e1, bisect);
           if (Math.abs(sinHalf) > 1e-6) {
             const dist = offsetAmt / sinHalf;
             if (Math.abs(dist) <= miterLimit * Math.abs(offsetAmt)) {
@@ -399,7 +401,7 @@ function offsetPolygon(
     // Start cap
     const startPt = pts[0];
     const startEdge = norm(sub(pts[1], pts[0]));
-    const startNorm: Pt = leftNormal(startEdge);
+    const startNorm: Pt = perpNormal(startEdge);
     const backDir: Pt = [-startEdge[0], -startEdge[1]];
 
     if (endType === EndType.Round) {
@@ -416,7 +418,7 @@ function offsetPolygon(
     // End cap
     const endPt = pts[n - 1];
     const endEdge = norm(sub(pts[n - 1], pts[n - 2]));
-    const endNorm: Pt = leftNormal(endEdge);
+    const endNorm: Pt = perpNormal(endEdge);
 
     if (endType === EndType.Round) {
       addRoundJoin(endPt[0], endPt[1], endNorm, [-endNorm[0], -endNorm[1]], offsetAmt, arcTolerance, result);
