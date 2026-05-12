@@ -4,3 +4,5 @@ wasm/clipper-offset/target/
 wasm/clipper-offset/pkg/
 wasm/clipper-offset/Cargo.lock
 wasm/pkg/
+src/generated/
+*.tgz

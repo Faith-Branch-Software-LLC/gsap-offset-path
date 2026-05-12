@@ -33,6 +33,23 @@ export interface OffsetPathOptions {
   originY?: number;
 }
 
+/** WASM module interface (matches wasm-pack output) */
+export interface ClipperOffsetWasm {
+  default: (arg: { module_or_path: BufferSource }) => Promise<void>;
+  offset_svg_path: (
+    pathData: string,
+    offsetAmount: number,
+    joinType: number,
+    endType: number,
+    miterLimit: number,
+    arcTolerance: number,
+    originX: number | undefined | null,
+    originY: number | undefined | null,
+  ) => string;
+  offset_svg_path_simple: (pathData: string, offsetAmount: number) => string;
+  validate_svg_path: (pathData: string) => boolean;
+}
+
 // Extend GSAP's TweenVars interface
 declare module 'gsap' {
   interface TweenVars {
